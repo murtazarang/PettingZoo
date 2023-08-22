@@ -1,5 +1,4 @@
 import os
-from test.all_modules import all_environments
 
 import pytest
 
@@ -11,6 +10,7 @@ from pettingzoo.test.render_test import render_test
 from pettingzoo.test.seed_test import check_environment_deterministic, seed_test
 from pettingzoo.test.state_test import state_test
 from pettingzoo.utils import aec_to_parallel, parallel_to_aec
+from pettingzoo.utils.all_modules import all_environments
 
 
 @pytest.mark.parametrize(("name", "env_module"), list(all_environments.items()))
@@ -34,10 +34,6 @@ def test_module(name, env_module):
 
     if ("butterfly/" in name) or ("mpe/" in name):
         state_test(env_module.env(), env_module.parallel_env())
-
-    # recreated_env = pickle.loads(pickle.dumps(_env))
-    # recreated_env.seed(42)
-    # api_test(recreated_env)
 
 
 def test_conversions():

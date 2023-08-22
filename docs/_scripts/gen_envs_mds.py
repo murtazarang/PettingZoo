@@ -4,7 +4,8 @@ This script reads documentation from /pettingzoo and puts it into md files insid
 
 import os
 import re
-from test.all_modules import all_environments
+
+from pettingzoo.utils.all_modules import all_environments
 
 
 def add_frontmatter(text, frontmatter_options):
@@ -35,12 +36,15 @@ def get_docs_from_py(file_path):
 
 if __name__ == "__main__":
     ignore_dirs = ["test", "utils"]
+    docs_dir = os.path.join(os.path.dirname(__file__), "..")
     envs_dir = os.path.join(os.path.dirname(__file__), "..", "..", "pettingzoo")
     for env_type in os.listdir(envs_dir):
         env_type_path = os.path.join(envs_dir, env_type)
         if not os.path.isdir(env_type_path) or env_type in ignore_dirs:
             continue
         envs_list = os.listdir(env_type_path)
+        if "__pycache__" in envs_list:
+            envs_list.remove("__pycache__")
 
         # rlcard_envs don't follow the same folder structure
         if "rlcard_envs" in envs_list:
@@ -92,8 +96,8 @@ if __name__ == "__main__":
                 if env_name in full_name
             ]
             env_name_version = full_env_names[0].split("/")[1]
-            if env_type == "classic":
-                with open("../code_examples/usage_aec_action_mask.py") as f:
+            if env_type == "classic" and env_name != "rps":
+                with open(f"{docs_dir}/code_examples/usage_aec_action_mask.py") as f:
                     usage = f.read()
                 usage = usage.replace("connect_four_v3", env_name_version)
                 docs_text += f"""## Usage
@@ -103,11 +107,11 @@ if __name__ == "__main__":
 ```
 """
             else:
-                with open("../code_examples/usage_aec.py") as f:
+                with open(f"{docs_dir}/code_examples/usage_aec.py") as f:
                     usage = f.read()
                 usage = usage.replace("space_invaders_v2", env_name_version)
                 usage = usage.replace("atari", env_type)
-                with open("../code_examples/usage_parallel.py") as f:
+                with open(f"{docs_dir}/code_examples/usage_parallel.py") as f:
                     usage_parallel = f.read()
                 usage_parallel = usage_parallel.replace(
                     "pistonball_v6", env_name_version
@@ -155,8 +159,7 @@ if __name__ == "__main__":
 ```
 """
             docs_env_path = os.path.join(
-                os.path.dirname(__file__),
-                "..",
+                docs_dir,
                 "environments",
                 env_type,
                 env_name + ".md",
