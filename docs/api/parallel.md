@@ -15,7 +15,7 @@ For a comparison with the AEC API, see [About AEC](https://pettingzoo.farama.org
 
 [PettingZoo Butterfly](/environments/butterfly/) provides standard examples of Parallel environments, such as [Pistonball](/environments/butterfly/pistonball).
 
-We provide tutorials for creating two custom Parallel environments: [Rock-Paper-Scissors (Parallel)](https://pettingzoo.farama.org/content/environment_creation/#example-custom-parallel-environment), and a simple [gridworld environment](/tutorials/environmentcreation/2-environment-logic/)
+We provide tutorials for creating two custom Parallel environments: [Rock-Paper-Scissors (Parallel)](https://pettingzoo.farama.org/content/environment_creation/#example-custom-parallel-environment), and a simple [gridworld environment](/tutorials/custom_environment/2-environment-logic/)
 
 ## Usage
 
@@ -26,7 +26,7 @@ from pettingzoo.butterfly import pistonball_v6
 parallel_env = pistonball_v6.parallel_env(render_mode="human")
 observations, infos = parallel_env.reset(seed=42)
 
-while env.agents:
+while parallel_env.agents:
     # this is where you would insert your policy
     actions = {agent: parallel_env.action_space(agent).sample() for agent in parallel_env.agents}
 

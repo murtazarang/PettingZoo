@@ -39,12 +39,13 @@ environments/third_party_envs
 :hidden:
 :caption: Tutorials
 
-tutorials/environmentcreation/index
+tutorials/custom_environment/index
 tutorials/cleanrl/index
 tutorials/tianshou/index
 tutorials/rllib/index
 tutorials/langchain/index
 tutorials/sb3/index
+tutorials/agilerl/index
 ```
 
 ```{toctree}

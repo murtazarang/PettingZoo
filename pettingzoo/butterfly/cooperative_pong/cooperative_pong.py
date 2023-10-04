@@ -9,7 +9,7 @@
 
 This environment is part of the <a href='..'>butterfly environments</a>. Please read that page first for general information.
 
-| Import               | `from pettingzoo.butterfly import cooperative_pong_v4` |
+| Import               | `from pettingzoo.butterfly import cooperative_pong_v5` |
 |----------------------|--------------------------------------------------------|
 | Actions              | Discrete                                               |
 | Parallel API         | Yes                                                    |
@@ -37,7 +37,7 @@ Move the left paddle using the 'W' and 'S' keys. Move the right paddle using 'UP
 ### Arguments
 
 ``` python
-cooperative_pong_v4.env(ball_speed=9, left_paddle_speed=12,
+cooperative_pong_v5.env(ball_speed=9, left_paddle_speed=12,
 right_paddle_speed=12, cake_paddle=True, max_cycles=900, bounce_randomness=False, max_reward=100, off_screen_penalty=-10)
 ```
 
@@ -147,6 +147,7 @@ class CooperativePong:
         render_mode=None,
         render_ratio=2,
         kernel_window_length=2,
+        render_fps=15,
     ):
         super().__init__()
 
@@ -211,6 +212,10 @@ class CooperativePong:
 
         self.reinit()
 
+        self.render_fps = render_fps
+        if self.render_mode == "human":
+            self.clock = pygame.time.Clock()
+
     def reinit(self):
         self.rewards = dict(zip(self.agents, [0.0] * len(self.agents)))
         self.terminations = dict(zip(self.agents, [False] * len(self.agents)))
@@ -266,11 +271,12 @@ class CooperativePong:
             if self.render_mode == "human":
                 self.screen = pygame.display.set_mode((self.s_width, self.s_height))
                 pygame.display.set_caption("Cooperative Pong")
-            self.draw()
+        self.draw()
 
         observation = np.array(pygame.surfarray.pixels3d(self.screen))
         if self.render_mode == "human":
             pygame.display.flip()
+            self.clock.tick(self.render_fps)
         return (
             np.transpose(observation, axes=(1, 0, 2))
             if self.render_mode == "rgb_array"

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 import warnings
 from collections import defaultdict
@@ -69,7 +71,6 @@ env_obs_dicts = [
     "texas_holdem_no_limit_v6",
     "texas_holdem_v4",
     "go_v5",
-    "hanabi_v4",
     "chess_v6",
     "connect_four_v3",
     "tictactoe_v3",
@@ -91,7 +92,7 @@ env_obs_space = [
     "texas_holdem_no_limit_v6",
     "texas_holdem_v4",
     "go_v5",
-    "hanabi_v4",
+    "hanabi_v5",
     "knights_archers_zombies_v10",
     "chess_v6",
     "connect_four_v3",
@@ -249,7 +250,7 @@ def test_observation_action_spaces(env, agent_0):
             )
         if (not isinstance(agent, str)) and agent != "env":
             warnings.warn(
-                "Agent's are recommended to have numbered string names, like player_0"
+                "Agents are recommended to have numbered string names, like player_0"
             )
         if not isinstance(agent, str) or not re.match(
             "[a-z]+_[0-9]+", agent
