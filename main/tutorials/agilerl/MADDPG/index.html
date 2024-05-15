@@ -8,10 +8,10 @@
     <meta property="og:type" content="website" />
     <meta property="og:description" content="" />
     <meta property="og:url" content="https://pettingzoo.farama.org/tutorials/agilerl/MADDPG.html" /><meta name="twitter:card" content="summary_large_image"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="AgileRL: Implementing MATD3" href="../MATD3/" /><link rel="prev" title="AgileRL Tutorial" href="../" />
+<link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="AgileRL: Implementing MATD3" href="../MATD3/" /><link rel="prev" title="AgileRL: Implementing DQN - Curriculum Learning and Self-play" href="../DQN/" />
         <link rel="canonical" href="https://pettingzoo.farama.org/tutorials/agilerl/MADDPG.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.08.19.dev1 -->
+    <link rel="shortcut icon" href="../../../_static/favicon.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2023.08.19.dev1 -->
         <title>AgileRL: Implementing MADDPG - PettingZoo Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=3e7f4c72" />
@@ -332,6 +332,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">AgileRL Tutorial</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of AgileRL Tutorial</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../DQN/">AgileRL: Implementing DQN - Curriculum Learning and Self-play</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">AgileRL: Implementing MADDPG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../MATD3/">AgileRL: Implementing MATD3</a></li>
 </ul>
@@ -399,14 +400,14 @@
           </div>
           <article role="main">
             
-            <section id="agilerl-implementing-maddpg">
-<h1>AgileRL: Implementing MADDPG<a class="headerlink" href="#agilerl-implementing-maddpg" title="Link to this heading">#</a></h1>
+            <section class="tex2jax_ignore mathjax_ignore" id="agilerl-implementing-maddpg">
+<h1>AgileRL: Implementing MADDPG<a class="headerlink" href="#agilerl-implementing-maddpg" title="Link to this heading">¶</a></h1>
 <p>This tutorial shows how to train an <a class="reference external" href="https://agilerl.readthedocs.io/en/latest/api/algorithms/maddpg.html">MADDPG</a> agent on the <a class="reference external" href="https://pettingzoo.farama.org/environments/atari/space_invaders/">space invaders</a> atari environment.</p>
 <section id="what-is-maddpg">
-<h2>What is MADDPG?<a class="headerlink" href="#what-is-maddpg" title="Link to this heading">#</a></h2>
+<h2>What is MADDPG?<a class="headerlink" href="#what-is-maddpg" title="Link to this heading">¶</a></h2>
 <p><a class="reference external" href="https://agilerl.readthedocs.io/en/latest/api/algorithms/maddpg.html">MADDPG</a> (Multi-Agent Deep Deterministic Policy Gradients) extends the <a class="reference external" href="https://agilerl.readthedocs.io/en/latest/api/algorithms/ddpg.html">DDPG</a> (Deep Deterministic Policy Gradients) algorithm to enable cooperative or competitive training of multiple agents in complex environments, enhancing the stability and convergence of the learning process through decentralized actor and centralized critic architectures. For further information on MADDPG, check out the AgileRL <a class="reference external" href="https://agilerl.readthedocs.io/en/latest/api/algorithms/maddpg.html">documentation</a>.</p>
 <section id="can-i-use-it">
-<h3>Can I use it?<a class="headerlink" href="#can-i-use-it" title="Link to this heading">#</a></h3>
+<h3>Can I use it?<a class="headerlink" href="#can-i-use-it" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -430,23 +431,27 @@
 </section>
 </section>
 <section id="environment-setup">
-<h2>Environment Setup<a class="headerlink" href="#environment-setup" title="Link to this heading">#</a></h2>
+<h2>Environment Setup<a class="headerlink" href="#environment-setup" title="Link to this heading">¶</a></h2>
 <p>To follow this tutorial, you will need to install the dependencies shown below. It is recommended to use a newly-created virtual environment to avoid dependency conflicts.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>agilerl&gt;=0.1.11
-pettingzoo[atari,mpe]&gt;=1.23.1
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>agilerl==0.1.22; python_version &gt;= &#39;3.9&#39;
+pettingzoo[classic,atari,mpe]&gt;=1.23.1
 SuperSuit&gt;=3.9.0
 torch&gt;=2.0.1
+numpy&gt;=1.24.2
+tqdm&gt;=4.65.0
 fastrand==1.3.0
 gymnasium&gt;=0.28.1
 imageio&gt;=2.31.1
 Pillow&gt;=9.5.0
+PyYAML&gt;=5.4.1
+wandb&gt;=0.13.10
 </pre></div>
 </div>
 </section>
 <section id="code">
-<h2>Code<a class="headerlink" href="#code" title="Link to this heading">#</a></h2>
+<h2>Code<a class="headerlink" href="#code" title="Link to this heading">¶</a></h2>
 <section id="train-multiple-agents-using-maddpg">
-<h3>Train multiple agents using MADDPG<a class="headerlink" href="#train-multiple-agents-using-maddpg" title="Link to this heading">#</a></h3>
+<h3>Train multiple agents using MADDPG<a class="headerlink" href="#train-multiple-agents-using-maddpg" title="Link to this heading">¶</a></h3>
 <p>The following code should run without any issues. The comments are designed to help you understand how to use PettingZoo with AgileRL. If you have any questions, please feel free to ask in the <a class="reference external" href="https://discord.com/invite/eB8HyTA2ux">Discord server</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;This tutorial shows how to train an MADDPG agent on the space invaders atari environment.</span>
 
@@ -467,15 +472,15 @@ Pillow&gt;=9.5.0
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;===== AgileRL Online Multi-Agent Demo =====&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;===== AgileRL MADDPG Demo =====&quot;</span><span class="p">)</span>
 
     <span class="c1"># Define the network configuration</span>
     <span class="n">NET_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;arch&quot;</span><span class="p">:</span> <span class="s2">&quot;cnn&quot;</span><span class="p">,</span>  <span class="c1"># Network architecture</span>
-        <span class="s2">&quot;h_size&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>  <span class="c1"># Network hidden size</span>
-        <span class="s2">&quot;c_size&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>  <span class="c1"># CNN channel size</span>
-        <span class="s2">&quot;k_size&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)],</span>  <span class="c1"># CNN kernel size</span>
-        <span class="s2">&quot;s_size&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>  <span class="c1"># CNN stride size</span>
+        <span class="s2">&quot;hidden_size&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>  <span class="c1"># Network hidden size</span>
+        <span class="s2">&quot;channel_size&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>  <span class="c1"># CNN channel size</span>
+        <span class="s2">&quot;kernel_size&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>  <span class="c1"># CNN kernel size</span>
+        <span class="s2">&quot;stride_size&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>  <span class="c1"># CNN stride size</span>
         <span class="s2">&quot;normalize&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>  <span class="c1"># Normalize image from range [0,255] to [0,1]</span>
     <span class="p">}</span>
 
@@ -486,7 +491,8 @@ Pillow&gt;=9.5.0
         <span class="c1"># Swap image channels dimension from last to first [H, W, C] -&gt; [C, H, W]</span>
         <span class="s2">&quot;CHANNELS_LAST&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
         <span class="s2">&quot;BATCH_SIZE&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>  <span class="c1"># Batch size</span>
-        <span class="s2">&quot;LR&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>  <span class="c1"># Learning rate</span>
+        <span class="s2">&quot;LR_ACTOR&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span>  <span class="c1"># Actor learning rate</span>
+        <span class="s2">&quot;LR_CRITIC&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>  <span class="c1"># Critic learning rate</span>
         <span class="s2">&quot;GAMMA&quot;</span><span class="p">:</span> <span class="mf">0.95</span><span class="p">,</span>  <span class="c1"># Discount factor</span>
         <span class="s2">&quot;MEMORY_SIZE&quot;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>  <span class="c1"># Max memory buffer size</span>
         <span class="s2">&quot;LEARN_STEP&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>  <span class="c1"># Learning frequency</span>
@@ -602,16 +608,31 @@ Pillow&gt;=9.5.0
     <span class="c1"># Training loop</span>
     <span class="k">for</span> <span class="n">idx_epi</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">max_episodes</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">pop</span><span class="p">:</span>  <span class="c1"># Loop through population</span>
-            <span class="n">state</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Reset environment at start of episode</span>
+            <span class="n">state</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>  <span class="c1"># Reset environment at start of episode</span>
             <span class="n">agent_reward</span> <span class="o">=</span> <span class="p">{</span><span class="n">agent_id</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">agent_id</span> <span class="ow">in</span> <span class="n">env</span><span class="o">.</span><span class="n">agents</span><span class="p">}</span>
             <span class="k">if</span> <span class="n">INIT_HP</span><span class="p">[</span><span class="s2">&quot;CHANNELS_LAST&quot;</span><span class="p">]:</span>
                 <span class="n">state</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="n">agent_id</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">agent_id</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">])</span>
                     <span class="k">for</span> <span class="n">agent_id</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
                 <span class="p">}</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_steps</span><span class="p">):</span>
-                <span class="n">action</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">getAction</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">)</span>  <span class="c1"># Get next action from agent</span>
-                <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">termination</span><span class="p">,</span> <span class="n">truncation</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span>
+                <span class="n">agent_mask</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;agent_mask&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;agent_mask&quot;</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">env_defined_actions</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">info</span><span class="p">[</span><span class="s2">&quot;env_defined_actions&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="s2">&quot;env_defined_actions&quot;</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                    <span class="k">else</span> <span class="kc">None</span>
+                <span class="p">)</span>
+
+                <span class="c1"># Get next action from agent</span>
+                <span class="n">cont_actions</span><span class="p">,</span> <span class="n">discrete_action</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">getAction</span><span class="p">(</span>
+                    <span class="n">state</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">,</span> <span class="n">agent_mask</span><span class="p">,</span> <span class="n">env_defined_actions</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">agent</span><span class="o">.</span><span class="n">discrete_actions</span><span class="p">:</span>
+                    <span class="n">action</span> <span class="o">=</span> <span class="n">discrete_action</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">action</span> <span class="o">=</span> <span class="n">cont_actions</span>
+
+                <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">termination</span><span class="p">,</span> <span class="n">truncation</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span>
                     <span class="n">action</span>
                 <span class="p">)</span>  <span class="c1"># Act in environment</span>
 
@@ -619,16 +640,12 @@ Pillow&gt;=9.5.0
                 <span class="k">if</span> <span class="n">INIT_HP</span><span class="p">[</span><span class="s2">&quot;CHANNELS_LAST&quot;</span><span class="p">]:</span>
                     <span class="n">state</span> <span class="o">=</span> <span class="p">{</span><span class="n">agent_id</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">agent_id</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
                     <span class="n">next_state</span> <span class="o">=</span> <span class="p">{</span>
-                        <span class="n">agent_id</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="n">agent_id</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">])</span>
                         <span class="k">for</span> <span class="n">agent_id</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">next_state</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
                     <span class="p">}</span>
 
-                <span class="c1"># Stop episode if any agents have terminated</span>
-                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">truncation</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">termination</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
-                    <span class="k">break</span>
-
-                <span class="c1"># Save experiences to replay buffe</span>
-                <span class="n">memory</span><span class="o">.</span><span class="n">save2memory</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">termination</span><span class="p">)</span>
+                <span class="c1"># Save experiences to replay buffer</span>
+                <span class="n">memory</span><span class="o">.</span><span class="n">save2memory</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">cont_actions</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">termination</span><span class="p">)</span>
 
                 <span class="c1"># Collect the reward</span>
                 <span class="k">for</span> <span class="n">agent_id</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reward</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -650,6 +667,10 @@ Pillow&gt;=9.5.0
                         <span class="k">for</span> <span class="n">agent_id</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">next_state</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
                     <span class="p">}</span>
                 <span class="n">state</span> <span class="o">=</span> <span class="n">next_state</span>
+
+                <span class="c1"># Stop episode if any agents have terminated</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">truncation</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">termination</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                    <span class="k">break</span>
 
             <span class="c1"># Save the total episode reward</span>
             <span class="n">score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">agent_reward</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
@@ -691,7 +712,7 @@ Pillow&gt;=9.5.0
 </div>
 </section>
 <section id="watch-the-trained-agents-play">
-<h3>Watch the trained agents play<a class="headerlink" href="#watch-the-trained-agents-play" title="Link to this heading">#</a></h3>
+<h3>Watch the trained agents play<a class="headerlink" href="#watch-the-trained-agents-play" title="Link to this heading">¶</a></h3>
 <p>The following code allows you to load your saved MADDPG alogorithm from the previous training block, test the algorithms performance, and then visualise a number of episodes as a gif.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 
@@ -792,7 +813,7 @@ Pillow&gt;=9.5.0
 
     <span class="c1"># Test loop for inference</span>
     <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">episodes</span><span class="p">):</span>
-        <span class="n">state</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">state</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
         <span class="n">agent_reward</span> <span class="o">=</span> <span class="p">{</span><span class="n">agent_id</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">agent_id</span> <span class="ow">in</span> <span class="n">agent_ids</span><span class="p">}</span>
         <span class="n">score</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_steps</span><span class="p">):</span>
@@ -801,8 +822,25 @@ Pillow&gt;=9.5.0
                     <span class="n">agent_id</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                     <span class="k">for</span> <span class="n">agent_id</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
                 <span class="p">}</span>
-            <span class="c1"># Get action</span>
-            <span class="n">action</span> <span class="o">=</span> <span class="n">maddpg</span><span class="o">.</span><span class="n">getAction</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="n">agent_mask</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;agent_mask&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;agent_mask&quot;</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">env_defined_actions</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">info</span><span class="p">[</span><span class="s2">&quot;env_defined_actions&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s2">&quot;env_defined_actions&quot;</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Get next action from agent</span>
+            <span class="n">cont_actions</span><span class="p">,</span> <span class="n">discrete_action</span> <span class="o">=</span> <span class="n">maddpg</span><span class="o">.</span><span class="n">getAction</span><span class="p">(</span>
+                <span class="n">state</span><span class="p">,</span>
+                <span class="n">epsilon</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">agent_mask</span><span class="o">=</span><span class="n">agent_mask</span><span class="p">,</span>
+                <span class="n">env_defined_actions</span><span class="o">=</span><span class="n">env_defined_actions</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">maddpg</span><span class="o">.</span><span class="n">discrete_actions</span><span class="p">:</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="n">discrete_action</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="n">cont_actions</span>
 
             <span class="c1"># Save the frame for this step and append to frames list</span>
             <span class="n">frame</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
@@ -811,16 +849,17 @@ Pillow&gt;=9.5.0
             <span class="c1"># Take action in environment</span>
             <span class="n">state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">termination</span><span class="p">,</span> <span class="n">truncation</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
 
-            <span class="c1"># Stop episode if any agents have terminated</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">truncation</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">termination</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
-                <span class="k">break</span>
-
             <span class="c1"># Save agent&#39;s reward for this step in this episode</span>
             <span class="k">for</span> <span class="n">agent_id</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reward</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">agent_reward</span><span class="p">[</span><span class="n">agent_id</span><span class="p">]</span> <span class="o">+=</span> <span class="n">r</span>
 
             <span class="c1"># Determine total score for the episode and then append to rewards list</span>
             <span class="n">score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">agent_reward</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+            <span class="c1"># Stop episode if any agents have terminated</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">truncation</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">termination</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                <span class="k">break</span>
+
         <span class="n">rewards</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
 
         <span class="c1"># Record agent specific episodic reward for each agent</span>
@@ -861,7 +900,7 @@ Pillow&gt;=9.5.0
                 <use href="#svg-arrow-right"></use>
               </svg>
             </a>
-            <a class="prev-page" href="../">
+            <a class="prev-page" href="../DQN/">
               <svg class="furo-related-icon">
                 <use href="#svg-arrow-right"></use>
               </svg>
@@ -870,7 +909,7 @@ Pillow&gt;=9.5.0
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">AgileRL Tutorial</div>
+                <div class="title">AgileRL: Implementing DQN - Curriculum Learning and Self-play</div>
                 
               </div>
             </a>
@@ -1011,8 +1050,8 @@ Pillow&gt;=9.5.0
         })()
       </script>
 
-    <script src="../../../_static/documentation_options.js?v=6ada4f11"></script>
-    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/documentation_options.js?v=4b4b37dc"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=7660844c"></script>
     
