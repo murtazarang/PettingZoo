@@ -57,6 +57,12 @@ CookingZoo: a gym-cooking derivative to simulate a complex cooking environment.
 
 A library for doing reinforcement learning using [Crazyflie](https://www.bitcraze.io/products/crazyflie-2-1/) drones.
 
+### [DSSE: Drone Swarm Search Environment](https://github.com/pfeinsper/drone-swarm-search)
+[![PettingZoo version dependency](https://img.shields.io/badge/PettingZoo-v1.22.3-blue)]()
+![GitHub stars](https://img.shields.io/github/stars/pfeinsper/drone-swarm-search)
+
+A single and multi-agent environment to train swarms of drones for maritime search.
+
 
 ### [PettingZoo Dilemma Envs](https://github.com/tianyu-z/pettingzoo_dilemma_envs)
 
@@ -80,6 +86,13 @@ Modernized clone of the [Breakout](https://en.wikipedia.org/wiki/Breakout_(video
 [![GitHub stars](https://img.shields.io/github/stars/johnMinelli/carla-gym)]()
 
 PettingZoo interface for CARLA Autonomous Driving simulator.
+
+### [MATS Gym](https://github.com/AutonomousDrivingExaminer/mats-gym)
+
+[![PettingZoo version dependency](https://img.shields.io/badge/PettingZoo-v1.23.0-blue)]()
+[![GitHub stars](https://img.shields.io/github/stars/AutonomousDrivingExaminer/mats-gym)]()
+
+A multi-agent traffic scenario environment for CARLA that supports [ScenarioRunner](https://github.com/carla-simulator/scenario_runner), [OpenScenario](https://www.asam.net/standards/detail/openscenario/) and [Scenic](https://github.com/BerkeleyLearnVerify/Scenic) scenario descriptions. It is also compatible with the [CARLA Autonomous Driving Challenge](https://leaderboard.carla.org/challenge/).
 
 ### [Fanorona AEC](https://github.com/AbhijeetKrishnan/fanorona-aec)
 [![PettingZoo version dependency](https://img.shields.io/badge/PettingZoo-v1.23.1-blue)]()

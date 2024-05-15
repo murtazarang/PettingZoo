@@ -9,7 +9,7 @@ from gymnasium.utils import seeding
 from pettingzoo import AECEnv
 from pettingzoo.mpe._mpe_utils.core import Agent
 from pettingzoo.utils import wrappers
-from pettingzoo.utils.agent_selector import agent_selector
+from pettingzoo.utils.agent_selector import AgentSelector
 
 alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -75,7 +75,7 @@ class SimpleEnv(AECEnv):
             agent.name: idx for idx, agent in enumerate(self.world.agents)
         }
 
-        self._agent_selector = agent_selector(self.agents)
+        self._agent_selector = AgentSelector(self.agents)
 
         # set spaces
         self.action_spaces = dict()
@@ -205,8 +205,9 @@ class SimpleEnv(AECEnv):
             agent.action.u = np.zeros(self.world.dim_p)
             if self.continuous_actions:
                 # Process continuous action as in OpenAI MPE
-                agent.action.u[0] += action[0][1] - action[0][2]
-                agent.action.u[1] += action[0][3] - action[0][4]
+                # Note: this ordering preserves the same movement direction as in the discrete case
+                agent.action.u[0] += action[0][2] - action[0][1]
+                agent.action.u[1] += action[0][4] - action[0][3]
             else:
                 # process discrete action
                 if action[0] == 1:
@@ -265,6 +266,7 @@ class SimpleEnv(AECEnv):
     def enable_render(self, mode="human"):
         if not self.renderOn and mode == "human":
             self.screen = pygame.display.set_mode(self.screen.get_size())
+            self.clock = pygame.time.Clock()
             self.renderOn = True
 
     def render(self):
@@ -282,6 +284,7 @@ class SimpleEnv(AECEnv):
             return np.transpose(observation, axes=(1, 0, 2))
         elif self.render_mode == "human":
             pygame.display.flip()
+            self.clock.tick(self.metadata["render_fps"])
             return
 
     def draw(self):

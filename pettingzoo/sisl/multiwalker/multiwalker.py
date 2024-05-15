@@ -125,7 +125,7 @@ from gymnasium.utils import EzPickle
 from pettingzoo import AECEnv
 from pettingzoo.sisl.multiwalker.multiwalker_base import FPS
 from pettingzoo.sisl.multiwalker.multiwalker_base import MultiWalkerEnv as _env
-from pettingzoo.utils import agent_selector, wrappers
+from pettingzoo.utils import AgentSelector, wrappers
 from pettingzoo.utils.conversions import parallel_wrapper_fn
 
 
@@ -156,10 +156,11 @@ class raw_env(AECEnv, EzPickle):
         self.agent_name_mapping = dict(
             zip(self.agents, list(range(self.env.n_walkers)))
         )
-        self._agent_selector = agent_selector(self.agents)
+        self._agent_selector = AgentSelector(self.agents)
         # spaces
         self.action_spaces = dict(zip(self.agents, self.env.action_space))
         self.observation_spaces = dict(zip(self.agents, self.env.observation_space))
+        self.state_space = self.env.state_space
         self.steps = 0
 
     def observation_space(self, agent):
@@ -190,6 +191,9 @@ class raw_env(AECEnv, EzPickle):
 
     def render(self):
         return self.env.render()
+
+    def state(self):
+        return self.env.state()
 
     def observe(self, agent):
         return self.env.observe(self.agent_name_mapping[agent])
