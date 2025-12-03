@@ -7,6 +7,14 @@
 :name: simple_world_comm
 ```
 
+```{eval-rst}
+.. warning::
+
+    The environment `pettingzoo.mpe.simple_world_comm_v3` has been moved to the new `MPE2 package <https://mpe2.farama.org>`_, and will be removed from PettingZoo in a future release.
+    Please update your import to `mpe2.simple_world_comm_v3`.
+
+```
+
 This environment is part of the <a href='..'>MPE environments</a>. Please read that page first for general information.
 
 | Import             | `from pettingzoo.mpe import simple_world_comm_v3`                                   |
@@ -30,11 +38,11 @@ other adversaries to help coordinate the chase. By default, there are 2 good age
 In particular, the good agents reward, is -5 for every collision with an adversary, -2 x bound by the `bound` function described in simple_tag, +2 for every collision with a food, and -0.05 x minimum distance to any food. The adversarial agents are rewarded +5 for collisions and -0.1 x minimum
 distance to a good agent. s
 
-Good agent observations: `[self_vel, self_pos, landmark_rel_positions, other_agent_rel_positions, other_agent_velocities, self_in_forest]`
+Good agent observations: `[self_vel, self_pos, landmark_rel_positions, other_agent_rel_positions, self_in_forest, other_agent_velocities]`
 
 Normal adversary observations:`[self_vel, self_pos, landmark_rel_positions, other_agent_rel_positions, other_agent_velocities, self_in_forest, leader_comm]`
 
-Adversary leader observations: `[self_vel, self_pos, landmark_rel_positions, other_agent_rel_positions, other_agent_velocities, leader_comm]`
+Adversary leader observations: `[self_vel, self_pos, landmark_rel_positions, other_agent_rel_positions, other_agent_velocities, self_in_forest, leader_comm]`
 
 *Note that when the forests prevent an agent from being seen, the observation of that agents relative position is set to (0,0).*
 
@@ -52,7 +60,7 @@ Adversary leader continuous action space: `[no_action, move_left, move_right, mo
 
 ``` python
 simple_world_comm_v3.env(num_good=2, num_adversaries=4, num_obstacles=1,
-                num_food=2, max_cycles=25, num_forests=2, continuous_actions=False)
+                num_food=2, max_cycles=25, num_forests=2, continuous_actions=False, dynamic_rescaling=False)
 ```
 
 
@@ -70,6 +78,8 @@ simple_world_comm_v3.env(num_good=2, num_adversaries=4, num_obstacles=1,
 `num_forests`: number of forests that can hide agents inside from being seen
 
 `continuous_actions`: Whether agent action spaces are discrete(default) or continuous
+
+`dynamic_rescaling`: Whether to rescale the size of agents and landmarks based on the screen size
 
 """
 
@@ -93,6 +103,7 @@ class raw_env(SimpleEnv, EzPickle):
         num_forests=2,
         continuous_actions=False,
         render_mode=None,
+        dynamic_rescaling=False,
     ):
         EzPickle.__init__(
             self,
@@ -116,6 +127,7 @@ class raw_env(SimpleEnv, EzPickle):
             render_mode=render_mode,
             max_cycles=max_cycles,
             continuous_actions=continuous_actions,
+            dynamic_rescaling=dynamic_rescaling,
         )
         self.metadata["name"] = "simple_world_comm_v3"
 

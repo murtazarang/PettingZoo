@@ -7,6 +7,14 @@
 :name: simple_crypto
 ```
 
+```{eval-rst}
+.. warning::
+
+    The environment `pettingzoo.mpe.simple_crypto_v3` has been moved to the new `MPE2 package <https://mpe2.farama.org>`_, and will be removed from PettingZoo in a future release.
+    Please update your import to `mpe2.simple_crypto_v3`.
+
+```
+
 This environment is part of the <a href='..'>MPE environments</a>. Please read that page first for general information.
 
 | Import             | `from pettingzoo.mpe import simple_crypto_v3` |
@@ -45,7 +53,7 @@ For Bob and Eve, their communication is checked to be the 1 bit of information t
 ### Arguments
 
 ``` python
-simple_crypto_v3.env(max_cycles=25, continuous_actions=False)
+simple_crypto_v3.env(max_cycles=25, continuous_actions=False, dynamic_rescaling=False)
 ```
 
 
@@ -53,6 +61,8 @@ simple_crypto_v3.env(max_cycles=25, continuous_actions=False)
 `max_cycles`:  number of frames (a step for each agent) until game terminates
 
 `continuous_actions`: Whether agent action spaces are discrete(default) or continuous
+
+`dynamic_rescaling`: Whether to rescale the size of agents and landmarks based on the screen size
 
 """
 
@@ -73,7 +83,13 @@ adversary to goal. Adversary is rewarded for its distance to the goal.
 
 
 class raw_env(SimpleEnv, EzPickle):
-    def __init__(self, max_cycles=25, continuous_actions=False, render_mode=None):
+    def __init__(
+        self,
+        max_cycles=25,
+        continuous_actions=False,
+        render_mode=None,
+        dynamic_rescaling=False,
+    ):
         EzPickle.__init__(
             self,
             max_cycles=max_cycles,
@@ -89,6 +105,7 @@ class raw_env(SimpleEnv, EzPickle):
             render_mode=render_mode,
             max_cycles=max_cycles,
             continuous_actions=continuous_actions,
+            dynamic_rescaling=dynamic_rescaling,
         )
         self.metadata["name"] = "simple_crypto_v3"
 
